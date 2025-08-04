@@ -1,0 +1,45 @@
+#include <vector>
+#include <queue>
+#include <string>
+using namespace std;
+
+string cycleDetection(vector<vector<int>>& edges, int n, int m)
+{
+    // Step 1: Build the adjacency list
+    vector<vector<int>> adj(n + 1);  // 1-based indexing
+    vector<int> inDegree(n + 1, 0);
+
+    for (auto &edge : edges) {
+        int u = edge[0];
+        int v = edge[1];
+        adj[u].push_back(v);
+        inDegree[v]++;
+    }
+
+    // Step 2: Initialize queue with all nodes having 0 in-degree
+    queue<int> q;
+    for (int i = 1; i <= n; i++) {
+        if (inDegree[i] == 0) {
+            q.push(i);
+        }
+    }
+
+    // Step 3: Kahn's Algorithm
+    int count = 0;
+    while (!q.empty()) {
+        int node = q.front();
+        q.pop();
+        count++;
+
+        for (int neighbor : adj[node]) {
+            inDegree[neighbor]--;
+            if (inDegree[neighbor] == 0) {
+                q.push(neighbor);
+            }
+        }
+    }
+
+    // Step 4: If all nodes are not visited, there is a cycle
+    if (count == n) return "No";
+    return "Yes";
+}
